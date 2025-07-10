@@ -1,0 +1,28 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Serverless file upload using Lambda and S3
+
+Resources:
+  UploadFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: upload_handler.lambda_handler
+      Runtime: python3.9
+      CodeUri: lambda/
+      Environment:
+        Variables:
+          UPLOAD_BUCKET: !Ref UploadBucket
+      Events:
+        UploadAPI:
+          Type: Api
+          Properties:
+            Path: /upload
+            Method: post
+
+  UploadBucket:
+    Type: AWS::S3::Bucket
+
+Outputs:
+  UploadApiEndpoint:
+    Description: "API Gateway endpoint URL"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/upload"
